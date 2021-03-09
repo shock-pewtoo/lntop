@@ -1,0 +1,62 @@
+---
+modes:
+  - name: ps
+    cmd: /bin/ps
+    args:
+      - -e
+      - -o
+      - '%cpu,%mem,pid,uid,gid,comm'
+    interval: 1
+    dropheader: 1
+    dropfooter: 4
+    matchre: (\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)
+    fields:
+      - name: '%cpu'
+        width: 8
+      - name: '%mem'
+        width: 8
+      - name: pid
+        width: 8
+      - name: uid
+        width: 8
+      - name: gid
+        width: 8
+      - name: comm
+        width: 60
+  - name: disk
+    cmd: /bin/df
+    args:
+      - -k
+      - -l
+    interval: 1
+    dropheader: 1
+    matchre: (\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)
+    fields:
+      - name: fs
+        width: 20
+      - name: size
+        width: 12
+        type: int
+      - name: used
+        hide: true
+      - name: avail
+        width: 12
+      - name: "%capacity"
+        hide: true
+      - name: iused
+        hide: true
+      - name: ifree
+        hide: true
+      - name: "%iused"
+        hide: true
+      - name: mount
+        width: 20
+  - name: du
+    cmd: /usr/bin/du
+    args:
+      - -ak
+    interval: 1
+    matchre: (\S+)\s+(\S+)
+    fields:
+      - name: size
+      - name: path

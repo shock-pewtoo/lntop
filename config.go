@@ -27,6 +27,7 @@ type Mode struct {
 	Name   string   `yaml:"name"`
     DropHeader int `yaml:"dropheader"`
     DropFooter int `yaml:"dropfooter"`
+    SortField int `yaml:"sortfield"`
 }
 
 func ReadConfig(configfile string) (Config) {
@@ -39,6 +40,12 @@ func ReadConfig(configfile string) (Config) {
     err = yaml.Unmarshal(contents, &c)
     if err != nil {
         log.Fatalf("Error parsing config file: ", err)
+    }
+
+    for i, _ := range c.Modes {
+        if c.Modes[i].SortField == 0 {
+            c.Modes[i].SortField = 1
+        }
     }
     return c
 }

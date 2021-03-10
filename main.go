@@ -18,7 +18,7 @@ import(
 )
 
 var paused = false
-var curMode = 1
+var curMode = 0
 var sortField = 1
 var reverse = true
 
@@ -113,6 +113,9 @@ func fmtResult(mode Mode, result Result) (string) {
             width = *mode.Fields[i].Width
         }
 
+        if len(v) > width {
+            v = v[0:width]
+        }
         fmtStr := fmt.Sprintf("%%-%ds", width)
         valstr = valstr + " " + fmt.Sprintf(fmtStr, v)
     }
@@ -172,25 +175,26 @@ func handleInput(config Config) {
                     if sortField == newSortField {
                         reverse = !reverse
                     }
+                    config.Modes[curMode].SortField = newSortField
                     sortField = newSortField
                 }
 
                 if ev.Ch == ']' {
-                    sortField = 1
                     reverse = true
                     curMode++
-                    if curMode > len(config.Modes) {
-                        curMode = 1
+                    if curMode > len(config.Modes) - 1 {
+                        curMode = 0
                     }
+                    sortField = config.Modes[curMode].SortField
                 }
 
                 if ev.Ch == '[' {
-                    sortField = 1
                     reverse = true
                     curMode--
-                    if curMode < 1 {
-                        curMode = len(config.Modes)
+                    if curMode < 0 {
+                        curMode = len(config.Modes) - 1
                     }
+                    sortField = config.Modes[curMode].SortField
                 }
             }
         }
@@ -217,7 +221,7 @@ func main() {
     go handleInput(config)
 
     for {
-        m := config.Modes[curMode-1]
+        m := config.Modes[curMode]
         if !paused {
             redraw(m)
         }

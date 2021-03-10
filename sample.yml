@@ -22,7 +22,7 @@ modes:
       - name: gid
         width: 8
       - name: comm
-        width: 60
+        width: 80
   - name: disk
     cmd: /bin/df
     args:
@@ -36,7 +36,6 @@ modes:
         width: 20
       - name: size
         width: 12
-        type: int
       - name: used
         hide: true
       - name: avail
@@ -56,7 +55,7 @@ modes:
     args:
       - -ak
     interval: 1
-    matchre: (\S+)\s+(\S+)
+    matchre: (\S+)\s+(.+)
     fields:
       - name: size
       - name: path

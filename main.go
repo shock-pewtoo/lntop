@@ -122,10 +122,21 @@ func fmtResult(mode Mode, result Result) (string) {
     return valstr
 }
 
+func drawModes(config Config) {
+    offset := 0
+    for i, m := range config.Modes {
+        if i == curMode {
+            tbprint(offset, 0, termbox.ColorBlack, termbox.ColorWhite, m.Name)
+        } else {
+            tbprint(offset, 0, termbox.ColorWhite, termbox.ColorBlack, m.Name)
+        }
+        offset += len(m.Name) + 1
+    }
+}
+
 func redraw(mode Mode) {
-    termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
     header := fmtValues(mode, mode.FieldNames())
-    tbprint(0, 0, termbox.ColorBlack, termbox.ColorWhite, header)
+    tbprint(0, 1, termbox.ColorBlack, termbox.ColorWhite, header)
 
     output := runCmd(mode.Cmd, mode.Args)
     lines := strings.Split(output, "\n")
@@ -152,7 +163,7 @@ func redraw(mode Mode) {
 
     for i, result := range(results) {
         valstr := fmtResult(mode, result)
-        tbprint(0, i+1, termbox.ColorDefault, termbox.ColorDefault, valstr)
+        tbprint(0, i+2, termbox.ColorDefault, termbox.ColorDefault, valstr)
     }
 
     termbox.Flush()
@@ -223,6 +234,8 @@ func main() {
     for {
         m := config.Modes[curMode]
         if !paused {
+            termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+            drawModes(config)
             redraw(m)
         }
         interval := time.Duration(1)

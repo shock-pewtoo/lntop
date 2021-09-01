@@ -214,13 +214,18 @@ func handleInput(config Config) {
 }
 
 func main() {
+    cmd := filepath.Base(os.Args[0])
+
+    systemconfig := "/etc/" + cmd + ".yml"
+
     usr, uerr := user.Current()
     if uerr != nil {
         log.Fatalf("Error loading current user; %s\n", uerr)
     }
+    userconfig := usr.HomeDir + "/." + cmd + ".yml"
 
-    cmd := filepath.Base(os.Args[0])
-    config := ReadConfig(usr.HomeDir + "/." + cmd + ".yml")
+    configpaths := []string{userconfig, systemconfig}
+    config := ReadConfig(configpaths)
     err := termbox.Init()
     if err != nil {
         log.Printf("Oopps", err)

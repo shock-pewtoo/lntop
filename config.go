@@ -5,6 +5,7 @@ import(
     "log"
     "time"
     "gopkg.in/yaml.v2"
+    "os"
 )
 
 type Field struct {
@@ -30,8 +31,25 @@ type Mode struct {
     SortField int `yaml:"sortfield"`
 }
 
-func ReadConfig(configfile string) (Config) {
-    contents, err := ioutil.ReadFile(configfile)
+func ReadConfig(paths []string) (Config) {
+    found := false
+    var actualpath string
+    for _, path := range paths {
+        if _, err := os.Stat(path); os.IsNotExist(err) {
+            continue
+        } else {
+            found = true
+            actualpath = path
+            break
+        }
+    }
+
+    if !found {
+        log.Fatalf("No configuration file found in %v", paths)
+        os.Exit(1)
+    }
+
+    contents, err := ioutil.ReadFile(actualpath)
     if err != nil {
         log.Fatalf("Error reading config file: ", err)
     }
